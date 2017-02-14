@@ -11,11 +11,11 @@ void swap_queue_node (struct pri_queue_node *left,struct pri_queue_node *right)
     memcpy(left,right,sizeof(*left));
     memcpy(right,&tmp,sizeof(*right));
 }
-struct pri_queue* init_queue(int count,int elt_size)
+struct pri_queue* init_queue(int count)
 {
     struct pri_queue *p_q = malloc(sizeof(*p_q));
     p_q->size = 0;
-    p_q->q = calloc(count,elt_size);
+    p_q->q = calloc(count,sizeof(struct pri_queue_node));
     return p_q;
 }
 int insert_queue(struct pri_queue* pri_q,void *data,int key)
@@ -35,12 +35,12 @@ int insert_queue(struct pri_queue* pri_q,void *data,int key)
         parent_pos = parent_pos/2;
         parent_key = pri_q->q[parent_pos].key;
     }
-    pri_q->q[insert_pos].data = data;
+    pri_q->q[insert_pos].func= data;
     pri_q->q[insert_pos].key = key;
     pri_q->size+=1;
 }
 void * delete_min(struct pri_queue *p){
-    void *data = p->q[1].data;
+    void *data = p->q[1].func;
     int hole_index = 1;
     int empty_index = p->size;
     int left_index = 2*hole_index <empty_index?2*hole_index:empty_index;
@@ -75,6 +75,15 @@ void dump_queue(struct pri_queue *p)
 {
     int i = 1;
     for(;i<=p->size;i++){
-        printf("%p %d\n",p->q[i].data,p->q[i].key);
+        printf("%p %d\n",p->q[i].func,p->q[i].key);
+    }
+}
+
+struct pri_queue_node* get_top_queue(struct pri_queue *p)
+{
+    if(p->size>0){
+        return &p->q[1];
+    }else{
+        return NULL;
     }
 }
